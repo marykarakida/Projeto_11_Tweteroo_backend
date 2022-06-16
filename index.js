@@ -19,7 +19,10 @@ app.post("/sign-up", (req, res) => {
 })
 
 app.get("/tweets", (req, res) => {
-    const tenLastTweets = tweets.slice(-10).sort((a, b) => b.id - a.id);
+    const page = Number(req.query.page);
+    const start = page * (-10);
+    const end = tweets.length - (page - 1) * (10);
+    let tenLastTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
     
     res.send(tenLastTweets);
 })
