@@ -26,7 +26,7 @@ app.get("/tweets", (req, res) => {
 
 app.post("/tweets", (req, res) => {
     const tweetId = tweets.length;
-    const tweet = { id: tweetId, ...req.body };
+    const tweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
 
     for (let i = 0 ; i < users.length ; i ++) {
         const user = users[i];
