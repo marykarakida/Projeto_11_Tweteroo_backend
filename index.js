@@ -3,14 +3,18 @@ import cors from "cors";
 
 const app = express();
 
-let usuarios = [];
+let users = [];
 let tweets = [];
 
 app.use(express.json())
 app.use(cors());
 
 app.post("/sign-up", (req, res) => {
-    usuarios.push(req.body);
+    const userId = users.length;
+    const user = { id: userId, ...req.body};
+
+    users.push(user);
+
     res.send("OK")
 })
 
@@ -21,10 +25,11 @@ app.get("/tweets", (req, res) => {
 })
 
 app.post("/tweets", (req, res) => {
-    const tweet = req.body;
+    const tweetId = tweets.length;
+    const tweet = { id: tweetId, ...req.body };
 
-    for (let i = 0 ; i < usuarios.length ; i ++) {
-        const user = usuarios[i];
+    for (let i = 0 ; i < users.length ; i ++) {
+        const user = users[i];
         if (user.username === tweet.username) {
             tweet.avatar = user.avatar;
             break;
