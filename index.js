@@ -19,7 +19,7 @@ app.post("/sign-up", (req, res) => {
 })
 
 app.get("/tweets", (req, res) => {
-    const tenLastTweets = tweets.slice(-10);
+    const tenLastTweets = tweets.slice(-10).sort((a, b) => b.id - a.id);
     
     res.send(tenLastTweets);
 })
