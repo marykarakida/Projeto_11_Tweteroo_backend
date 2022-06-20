@@ -11,9 +11,24 @@ app.use(cors());
 
 app.post("/sign-up", (req, res) => {
     const userId = users.length;
-    const user = { id: userId, ...req.body};
+    const newUser = { id: userId, ...req.body};
 
-    users.push(user);
+    if (newUser.username === "" || newUser.avatar === "") {
+        res.status(400).send("Todos os campos são obrigatórios!");
+        return;
+    }
+
+    if (users.some(user => user.username === newUser.username)) {
+        res.status(400).send("O username inserido já está sendo usado.");
+        return;
+    }
+
+    if (!(/\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(newUser.avatar))) {
+        res.status(400).send("A extensão da imagem do avatar inserida não é aceita nesse aplicativo.");
+        return;
+    }
+
+    users.push(newUser);
 
     res.status(201).send("OK");
 })
@@ -22,7 +37,7 @@ app.get("/tweets", (req, res) => {
     const page = Number(req.query.page);
     const start = page * (-10);
     const end = tweets.length - (page - 1) * (10);
-    let tenLastTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
+    const tenLastTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
     
     res.send(tenLastTweets);
 })
