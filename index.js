@@ -3,8 +3,8 @@ import cors from "cors";
 
 const app = express();
 
-let users = [];
-let tweets = [];
+const users = [];
+const tweets = [];
 
 app.use(express.json())
 app.use(cors());
@@ -35,11 +35,31 @@ app.post("/sign-up", (req, res) => {
 
 app.get("/tweets", (req, res) => {
     const page = Number(req.query.page);
-    const start = page * (-10);
-    const end = tweets.length - (page - 1) * (10);
-    const tenLastTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
+    const tweetsPerPage = 10;
+
+    const start = page * (tweetsPerPage * -1);
+    const end = tweets.length - (page - 1) * (tweetsPerPage);
+    const displayedTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
+
+    for (let i = 0 ; i < displayedTweets.length ; i ++) {
+        const tweet = {...displayedTweets[i]};
+        const tweetUserInfo = users.find(user => user.username === tweet.username);
+
+        tweet.avatar = tweetUserInfo.avatar;
+
+        displayedTweets[i] = tweet;
+    }
     
-    res.send(tenLastTweets);
+    res.send(displayedTweets);
+})
+
+app.post("/tweets", (req, res) => {
+    const tweetId = tweets.length;
+    const tweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
+
+    tweets.push(tweet);
+
+    res.status(201).send("OK");
 })
 
 app.get("/tweets/:username", (req, res) => {
@@ -48,23 +68,5 @@ app.get("/tweets/:username", (req, res) => {
 
     res.send(userTweets);
 })
-
-app.post("/tweets", (req, res) => {
-    const tweetId = tweets.length;
-    const tweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
-
-    for (let i = 0 ; i < users.length ; i ++) {
-        const user = users[i];
-        if (user.username === tweet.username) {
-            tweet.avatar = user.avatar;
-            break;
-        }
-    }
-
-    tweets.push(tweet);
-
-    res.status(201).send("OK");
-})
-
 
 app.listen(5000);
