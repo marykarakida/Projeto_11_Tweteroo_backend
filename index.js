@@ -45,22 +45,14 @@ app.get("/tweets", (req, res) => {
         res.status(400).send("Informe uma página válida!");
         return;
     }
-
-    for (let i = 0 ; i < displayedTweets.length ; i ++) {
-        const tweet = {...displayedTweets[i]};
-        const tweetUserInfo = users.find(user => user.username === tweet.username);
-
-        tweet.avatar = tweetUserInfo.avatar;
-
-        displayedTweets[i] = tweet;
-    }
     
     res.send(displayedTweets);
 })
 
 app.post("/tweets", (req, res) => {
     const tweetId = tweets.length;
-    const newTweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
+    const tweetUserInfo = users.find(user => user.username === req.headers.user);
+    const newTweet = { id: tweetId, avatar: tweetUserInfo.avatar, username: req.headers.user, tweet: req.body.tweet };
 
     if (newTweet.username === "" || newTweet.tweet === "") {
         res.status(400).send("Todos os campos são obrigatórios!");
