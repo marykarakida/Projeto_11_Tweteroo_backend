@@ -41,6 +41,11 @@ app.get("/tweets", (req, res) => {
     const end = tweets.length - (page - 1) * (tweetsPerPage);
     const displayedTweets = tweets.slice(start, end).sort((a, b) => b.id - a.id);
 
+    if (page > 1 && end <= 0) {
+        res.status(400).send("Informe uma página válida!");
+        return;
+    }
+
     for (let i = 0 ; i < displayedTweets.length ; i ++) {
         const tweet = {...displayedTweets[i]};
         const tweetUserInfo = users.find(user => user.username === tweet.username);
