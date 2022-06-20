@@ -55,9 +55,19 @@ app.get("/tweets", (req, res) => {
 
 app.post("/tweets", (req, res) => {
     const tweetId = tweets.length;
-    const tweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
+    const newTweet = { id: tweetId, username: req.headers.user, tweet: req.body.tweet };
 
-    tweets.push(tweet);
+    if (newTweet.username === "" || newTweet.tweet === "") {
+        res.status(400).send("Todos os campos são obrigatórios!");
+        return;
+    }
+
+    if (!(users.some(user => user.username === newTweet.username))) {
+        res.status(400).send("Você foi desconectado. Faça login novamente.");
+        return;
+    }
+
+    tweets.push(newTweet);
 
     res.status(201).send("OK");
 })
